@@ -4,7 +4,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 const {
   createInterview,
   getMyInterviews,
-  getInterviewById
+  getInterviewById,
+  deleteInterview,
 } = require("../controllers/interviewController");
 
 const router = express.Router();
@@ -14,6 +15,11 @@ router.post("/create", authMiddleware, createInterview);
 
 // Get My Interviews
 router.get("/my-interviews", authMiddleware, getMyInterviews);
+router.delete(
+  "/:interviewId",
+  authMiddleware,
+  deleteInterview
+);
 
 router.get("/:id", authMiddleware, getInterviewById);
 module.exports = router;

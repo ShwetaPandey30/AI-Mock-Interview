@@ -1,5 +1,7 @@
 const Interview = require("../models/Interview");
-
+const Answer = require("../models/Answer");
+const Question = require("../models/Question");
+const Feedback = require("../models/Feedback");
 const createInterview = async (req, res) => {
   try {
     const {
@@ -87,8 +89,44 @@ const getInterviewById = async (req, res) => {
     });
   }
 };
+
+const deleteInterview = async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+
+    const interview = await Interview.findOne({
+      _id: interviewId,
+      createdBy: req.user.id,
+    });
+
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    await Question.deleteMany({ interviewId });
+    await Answer.deleteMany({ interviewId });
+    await Feedback.deleteMany({ interviewId });
+
+    await Interview.findByIdAndDelete(interviewId);
+
+    res.status(200).json({
+      success: true,
+      message: "Interview deleted successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   createInterview,
   getMyInterviews,
   getInterviewById,
+  deleteInterview,
 };
